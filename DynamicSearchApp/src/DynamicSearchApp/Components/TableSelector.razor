@@ -1,4 +1,6 @@
-
+@inject IState<SearchState> SearchState
+@inject IDispatcher Dispatcher
+@using Fluxor
 <div>
     <label>Select Table:</label>
     <TelerikDropDownList Data="@SearchState.Value.Tables"
