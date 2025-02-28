@@ -21,7 +21,7 @@ public class FileController : ControllerBase
     public IActionResult GetFile(int index)
     {
         var file = _fileService.GetFileByIndex(index);
-        var actualPath = Path.Combine(_fileService.GetBasePath(), (index / 1000).ToString(), file.Name); // Use GetBasePath()
+        var actualPath = Path.Combine(_fileService.GetBasePath(), (index / 1000).ToString(), file.Name);
         if (!System.IO.File.Exists(actualPath))
         {
             return NotFound();

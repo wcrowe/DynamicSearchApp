@@ -1,5 +1,13 @@
 ﻿@page "/error"
 @rendermode InteractiveAuto
+@inject NavigationManager NavigationManager
+@inject IState<SearchState> SearchState
 
 <h3>Error</h3>
 <p>Sorry, something went wrong.</p>
+@if (!string.IsNullOrEmpty(SearchState.Value.ErrorMessage))
+{
+    <p class="text-danger">Details: @SearchState.Value.ErrorMessage</p>
+}
+<p>Requested URL: @NavigationManager.Uri</p>
+<TelerikButton OnClick="@(() => NavigationManager.NavigateTo("/dynamic-search"))">Return to Search</TelerikButton>

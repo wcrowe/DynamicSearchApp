@@ -1,5 +1,6 @@
 @inject IState<SearchState> SearchState
 @inject FileService FileService
+
 @if (SearchState.Value.SearchResults != null && SearchState.Value.SearchResults.Any())
 {
     <TelerikGrid Data="@SearchState.Value.SearchResults"

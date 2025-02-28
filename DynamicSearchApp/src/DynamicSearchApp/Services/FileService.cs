@@ -11,6 +11,12 @@ public class FileService
         _baseNetworkPath = configuration["FileStorage:NetworkPath"] ?? @"\\networkdrive\files";
     }
 
+    // Add this method
+    public string GetBasePath()
+    {
+        return _baseNetworkPath;
+    }
+
     public FileItem GetFileByIndex(int index)
     {
         int category = GetRangeCategory(index);
@@ -38,12 +44,6 @@ public class FileService
             Name = fileNameWithoutExtension + ".tif",
             Url = $"/api/file/{index}"
         };
-    }
-
-    // Added public method to access _baseNetworkPath
-    public string GetBasePath()
-    {
-        return _baseNetworkPath;
     }
 
     private int GetRangeCategory(int input)

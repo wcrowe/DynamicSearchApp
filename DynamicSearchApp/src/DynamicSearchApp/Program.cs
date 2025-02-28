@@ -1,13 +1,13 @@
 using Microsoft.AspNetCore.Authentication.Negotiate;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Http;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Data.SqlClient;
 using System.Data;
 using DynamicSearchApp.State;
 using DynamicSearchApp.Services;
 using Fluxor;
-using Microsoft.Extensions.Http;  // Added for AddHttpClient
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,7 +29,6 @@ builder.Services.AddFluxor(o => o
     .ScanTypes(typeof(Program)));
 
 // Services
-builder.Services.AddScoped<IState<SearchState>>();
 builder.Services.AddScoped<IDbConnection>(sp =>
     new SqlConnection(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddScoped<DataService>();
@@ -46,20 +45,18 @@ builder.Services.AddHttpClient("BlazorClient", client =>
     UseDefaultCredentials = true
 });
 
-// CORS for WebAssembly
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowBlazorClient", policy =>
-        policy.WithOrigins("https://localhost:5001")
-              .AllowAnyMethod()
-              .AllowAnyHeader()
-              .AllowCredentials());
+options.AddPolicy("AllowBlazorClient", policy =>
+    policy.WithOrigins("https://localhost:5001")
+          .AllowAnyMethod()
+          .AllowAnyHeader()
+          .AllowCredentials());
 });
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline
-app.UseStaticFiles();  // Serve wwwroot files (e.g., index.html)
+app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();

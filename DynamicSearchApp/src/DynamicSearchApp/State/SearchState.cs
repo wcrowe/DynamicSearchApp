@@ -1,7 +1,9 @@
 ﻿using DynamicSearchApp.Models;
+using Fluxor;
 
 namespace DynamicSearchApp.State;
 
+[FeatureState]
 public class SearchState
 {
     public List<string> Tables { get; }

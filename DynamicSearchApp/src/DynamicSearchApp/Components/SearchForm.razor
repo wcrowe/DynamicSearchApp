@@ -1,7 +1,6 @@
-@inject IState<SearchState> SearchState  // Inject the state wrapper
-@inject IDispatcher Dispatcher           // Optional: if you need to dispatch actions
+@inject IState<SearchState> SearchState
 
-@if (SearchState.Value.Columns.Any())    // Access state via .Value
+@if (SearchState.Value.Columns.Any())
 {
     <div class="search-form">
         <h4>Search @SearchState.Value.SelectedTable</h4>

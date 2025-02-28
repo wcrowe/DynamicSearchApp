@@ -1,12 +1,12 @@
 @inject IState<SearchState> SearchState
 @inject IDispatcher Dispatcher
-@using Fluxor
+
 <div>
     <label>Select Table:</label>
     <TelerikDropDownList Data="@SearchState.Value.Tables"
-                         @bind-Value="@SearchState.Value.SelectedTable"
+                         Value="@SearchState.Value.SelectedTable"
+                         @onchange="@(args => OnTableSelected(args.Value as string))"
                          DefaultText="-- Select a Table --"
-                         @onchange="@(async () => await OnTableSelected(SearchState.Value.SelectedTable))"
                          Width="200px" />
 </div>
 
