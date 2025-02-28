@@ -1,5 +1,5 @@
 ﻿@page "/dynamic-search"
-@rendermode InteractiveAuto
+@rendermode RenderModes.InteractiveAuto
 @inject DataService DataService
 @inject HttpClient HttpClient
 @inject IState<SearchState> SearchState
@@ -16,6 +16,7 @@
 <SearchResults />
 
 @code {
+    // Rest of your code remains unchanged
     protected override async Task OnInitializedAsync()
     {
         try

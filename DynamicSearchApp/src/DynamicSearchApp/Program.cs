@@ -8,6 +8,7 @@ using System.Data;
 using DynamicSearchApp.State;
 using DynamicSearchApp.Services;
 using Fluxor;
+using Microsoft.AspNetCore.Components; // Ensure this is included
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -47,11 +48,11 @@ builder.Services.AddHttpClient("BlazorClient", client =>
 
 builder.Services.AddCors(options =>
 {
-options.AddPolicy("AllowBlazorClient", policy =>
-    policy.WithOrigins("https://localhost:5001")
-          .AllowAnyMethod()
-          .AllowAnyHeader()
-          .AllowCredentials());
+    options.AddPolicy("AllowBlazorClient", policy =>
+        policy.WithOrigins("https://localhost:5001")
+              .AllowAnyMethod()
+              .AllowAnyHeader()
+              .AllowCredentials());
 });
 
 var app = builder.Build();
@@ -71,4 +72,11 @@ app.MapRazorComponents<DynamicSearchApp.App>()
     .AddInteractiveWebAssemblyRenderMode()
     .AddAdditionalAssemblies(typeof(Program).Assembly);
 
+// Define static render modes for use in Razor components
 app.Run();
+
+// Add this static class at the bottom of Program.cs
+public static class RenderModes
+{
+    public static readonly IComponentRenderMode InteractiveAuto = RenderMode.InteractiveAuto;
+}
