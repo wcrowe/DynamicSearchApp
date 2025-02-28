@@ -1,0 +1,43 @@
+@inject IState<SearchState> SearchState  // Inject the state wrapper
+@inject IDispatcher Dispatcher           // Optional: if you need to dispatch actions
+
+@if (SearchState.Value.Columns.Any())    // Access state via .Value
+{
+    <div class="search-form">
+        <h4>Search @SearchState.Value.SelectedTable</h4>
+        <TelerikForm Model="@SearchState.Value.SearchFields" OnValidSubmit="@HandleSearch">
+            <FormItems>
+                @for (int i = 0; i < SearchState.Value.SearchFields.Count; i++)
+                {
+                    var field = SearchState.Value.SearchFields[i];
+                    var index = i;
+                    <FormItem>
+                        <Template>
+                            <label>@SearchState.Value.Columns.First(c => c.ColumnName == field.ColumnName).DisplayName (@field.DataType)</label>
+                            @if (field.DataType.ToLower() == "date")
+                            {
+                                <TelerikDatePicker @bind-Value="@field.DateValue" Width="100%" />
+                            }
+                            else
+                            {
+                                <TelerikTextBox @bind-Value="@field.StringValue" Width="100%" />
+                            }
+                        </Template>
+                    </FormItem>
+                }
+            </FormItems>
+            <FormButtons>
+                <TelerikButton ButtonType="@ButtonType.Submit" Primary="true">Search</TelerikButton>
+            </FormButtons>
+        </TelerikForm>
+    </div>
+}
+
+@code {
+    [Parameter] public EventCallback OnSearch { get; set; }
+
+    private void HandleSearch()
+    {
+        OnSearch.InvokeAsync();
+    }
+}

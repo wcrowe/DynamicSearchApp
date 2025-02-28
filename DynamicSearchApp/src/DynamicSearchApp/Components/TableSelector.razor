@@ -1,0 +1,21 @@
+<div>
+    <label>Select Table:</label>
+    <TelerikDropDownList Data="@SearchState.Value.Tables"
+                         @bind-Value="@SearchState.Value.SelectedTable"
+                         DefaultText="-- Select a Table --"
+                         @onchange="@(async () => await OnTableSelected(SearchState.Value.SelectedTable))"
+                         Width="200px" />
+</div>
+
+@code {
+    [Parameter] public EventCallback<string> OnTableSelectedCallback { get; set; }
+
+    private async Task OnTableSelected(string tableName)
+    {
+        if (tableName != null)
+        {
+            Dispatcher.Dispatch(new SelectTableAction(tableName));
+            await OnTableSelectedCallback.InvokeAsync(tableName);
+        }
+    }
+}

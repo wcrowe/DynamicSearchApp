@@ -1,0 +1,48 @@
+@if (SearchState.Value.SearchResults != null && SearchState.Value.SearchResults.Any())
+{
+    <TelerikGrid Data="@SearchState.Value.SearchResults"
+                 AutoGenerateColumns="false"
+                 Pageable="true"
+                 PageSize="10">
+        <GridColumns>
+            @foreach (var column in SearchState.Value.Columns)
+            {
+                <GridColumn Field="@column.ColumnName" Title="@column.DisplayName" />
+            }
+            <GridColumn Title="File">
+                <Template>
+                    @{
+                        var row = context as IDictionary<string, object>;
+                        var index = row.ContainsKey("image_index") ? Convert.ToInt32(row["image_index"]) : -1;
+                        if (index >= 0)
+                        {
+                            var file = FileService.GetFileByIndex(index);
+                            var inferredType = file.GetInferredType();
+                            var fileUrl = $"/api/file/{index}";
+                            @switch (inferredType)
+                            {
+                                case "tiff":
+                                    <span>TIFF Viewer Not Supported</span>
+                                    <a href="@fileUrl" download="@file.Name" class="ms-2">Download</a>
+                                    break;
+                                case "pdf":
+                                    <a href="@fileUrl" target="_blank">View PDF</a>
+                                    break;
+                                case "html":
+                                    <iframe src="@fileUrl" width="100%" height="200px" style="border:none;"></iframe>
+                                    break;
+                                default:
+                                    <a href="@fileUrl" download="@file.Name">Download (Unknown Type)</a>
+                                    break;
+                            }
+                        }
+                        else
+                        {
+                            <span>No Index Found</span>
+                        }
+                    }
+                </Template>
+            </GridColumn>
+        </GridColumns>
+    </TelerikGrid>
+}

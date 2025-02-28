@@ -1,0 +1,86 @@
+﻿@page "/dynamic-search"
+@rendermode InteractiveAuto
+@inject DataService DataService
+@inject HttpClient HttpClient
+@inject IState<SearchState> SearchState
+@inject IDispatcher Dispatcher
+
+<h3>Dynamic Search</h3>
+
+<TableSelector OnTableSelectedCallback="@HandleTableSelected" />
+@if (!string.IsNullOrEmpty(SearchState.Value.ErrorMessage))
+{
+    <p class="text-danger">@SearchState.Value.ErrorMessage</p>
+}
+<SearchForm OnSearch="@HandleSearch" />
+<SearchResults />
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            List<string> tables = OperatingSystem.IsBrowser()
+                ? await HttpClient.GetFromJsonAsync<List<string>>("api/data/tables")
+                : await DataService.GetTableNames();
+            Dispatcher.Dispatch(new LoadTablesAction(tables));
+        }
+        catch (HttpRequestException ex)
+        {
+            Dispatcher.Dispatch(new SetErrorAction($"Failed to load tables: {ex.Message}"));
+        }
+    }
+
+    private async Task HandleTableSelected(string tableName)
+    {
+        if (!string.IsNullOrEmpty(tableName))
+        {
+            try
+            {
+                List<ColumnSchema> columns = OperatingSystem.IsBrowser()
+                    ? await HttpClient.GetFromJsonAsync<List<ColumnSchema>>($"api/data/schema?tableName={tableName}")
+                    : await DataService.GetTableSchema(tableName);
+
+                if (columns == null || !columns.Any())
+                {
+                    Dispatcher.Dispatch(new SetErrorAction($"No schema found for table '{tableName}'."));
+                    return;
+                }
+                Dispatcher.Dispatch(new LoadSchemaAction(columns));
+                Dispatcher.Dispatch(new ClearResultsAction());
+            }
+            catch (HttpRequestException ex)
+            {
+                Dispatcher.Dispatch(new SetErrorAction($"Error loading schema for '{tableName}': {ex.Message}"));
+            }
+        }
+    }
+
+    private async Task HandleSearch()
+    {
+        var searchableField = SearchState.Value.SearchFields.FirstOrDefault(f =>
+            (!string.IsNullOrEmpty(f.StringValue) && f.DataType.ToLower() != "date") ||
+            (f.DataType.ToLower() == "date" && f.DateValue.HasValue));
+
+        if (searchableField != null)
+        {
+            try
+            {
+                string searchValue = searchableField.DataType.ToLower() == "date"
+                    ? searchableField.DateValue?.ToString("yyyy-MM-dd")
+                    : searchableField.StringValue;
+
+                List<Dictionary<string, object>> results = OperatingSystem.IsBrowser()
+                    ? await HttpClient.GetFromJsonAsync<List<Dictionary<string, object>>>(
+                        $"api/data/search?tableName={SearchState.Value.SelectedTable}&searchColumn={searchableField.ColumnName}&searchValue={searchValue}")
+                    : await DataService.SearchTable(SearchState.Value.SelectedTable, searchableField.ColumnName, searchValue);
+
+                Dispatcher.Dispatch(new SearchAction(results));
+            }
+            catch (HttpRequestException ex)
+            {
+                Dispatcher.Dispatch(new SetErrorAction($"Search failed: {ex.Message}"));
+            }
+        }
+    }
+}

@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35825.156 d17.13
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DynamicSearchApp", "DynamicSearchApp\src\DynamicSearchApp\DynamicSearchApp.csproj", "{6BC594FB-D97A-7FC7-92A0-BDEE6D6C6F13}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6BC594FB-D97A-7FC7-92A0-BDEE6D6C6F13}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6BC594FB-D97A-7FC7-92A0-BDEE6D6C6F13}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6BC594FB-D97A-7FC7-92A0-BDEE6D6C6F13}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6BC594FB-D97A-7FC7-92A0-BDEE6D6C6F13}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {3E871675-7D1C-4563-9925-CC0B7DDC5B8A}
+	EndGlobalSection
+EndGlobal
