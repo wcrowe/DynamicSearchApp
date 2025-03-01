@@ -15,7 +15,16 @@ public class DataService
 
     public async Task<List<string>> GetTableNames()
     {
-        return (await _dbConnection.QueryAsync<string>("GetTableNames", commandType: CommandType.StoredProcedure)).ToList();
+        try
+        {
+            return (await _dbConnection.QueryAsync<string>("GetTableNames", commandType: CommandType.StoredProcedure)).ToList();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            return new List<string>();
+        }
+        //  return (await _dbConnection.QueryAsync<string>("GetTableNames", commandType: CommandType.StoredProcedure)).ToList();
     }
 
     public async Task<List<ColumnSchema>> GetTableSchema(string tableName)

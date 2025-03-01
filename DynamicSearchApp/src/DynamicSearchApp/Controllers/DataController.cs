@@ -20,8 +20,17 @@ public class DataController : ControllerBase
     [HttpGet("tables")]
     public async Task<IActionResult> GetTableNames()
     {
-        var tables = await _dataService.GetTableNames();
-        return Ok(tables);
+        try
+        {
+            var tables = await _dataService.GetTableNames();
+            return Ok(tables);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+
     }
 
     [HttpGet("schema")]

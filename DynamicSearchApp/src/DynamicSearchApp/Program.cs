@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication.Negotiate;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Http;
@@ -8,7 +9,6 @@ using System.Data;
 using DynamicSearchApp.State;
 using DynamicSearchApp.Services;
 using Fluxor;
-using Microsoft.AspNetCore.Components; // Ensure this is included
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,11 +26,15 @@ builder.Services.AddRazorComponents()
 builder.Services.AddTelerikBlazor();
 
 // Fluxor state management
-builder.Services.AddFluxor(o => o
-    .ScanTypes(typeof(Program)));
+builder.Services.AddFluxor(o => 
+{
+    o.ScanTypes(typeof(Program)); // Still scans for reducers, actions, etc.
+});
+// Explicitly register SearchFeature
+builder.Services.AddScoped<IFeature<SearchState>, SearchFeature>();
 
 // Services
-builder.Services.AddScoped<IDbConnection>(sp =>
+builder.Services.AddScoped<IDbConnection>(sp => 
     new SqlConnection(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddScoped<DataService>();
 builder.Services.AddSingleton<FileService>();
@@ -39,7 +43,7 @@ builder.Services.AddControllers();
 // HttpClient for WebAssembly mode with Windows Authentication
 builder.Services.AddHttpClient("BlazorClient", client =>
 {
-    client.BaseAddress = new Uri(builder.Configuration.GetValue<string>("BaseUrl") ?? "https://localhost:5001/");
+    client.BaseAddress = new Uri(builder.Configuration.GetValue<string>("BaseUrl") ?? "https://localhost:7244/");
 })
 .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
 {
@@ -49,10 +53,12 @@ builder.Services.AddHttpClient("BlazorClient", client =>
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowBlazorClient", policy =>
-        policy.WithOrigins("https://localhost:5001")
+    {
+        policy.WithOrigins("https://localhost:7244", "http://localhost:7244")
               .AllowAnyMethod()
               .AllowAnyHeader()
-              .AllowCredentials());
+              .AllowCredentials();
+    });
 });
 
 var app = builder.Build();
@@ -69,13 +75,10 @@ app.MapFallbackToFile("index.html");
 
 app.MapRazorComponents<DynamicSearchApp.App>()
     .AddInteractiveServerRenderMode()
-    .AddInteractiveWebAssemblyRenderMode()
-    .AddAdditionalAssemblies(typeof(Program).Assembly);
+    .AddInteractiveWebAssemblyRenderMode();
 
-// Define static render modes for use in Razor components
 app.Run();
 
-// Add this static class at the bottom of Program.cs
 public static class RenderModes
 {
     public static readonly IComponentRenderMode InteractiveAuto = RenderMode.InteractiveAuto;
